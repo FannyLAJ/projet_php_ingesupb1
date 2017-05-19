@@ -53,3 +53,5 @@ CREATE TABLE IF NOT EXISTS detail_commande (
 ALTER TABLE commande ADD CONSTRAINT fk_id_membre FOREIGN KEY (id_membre) REFERENCES membre(id_membre);
 ALTER TABLE detail_commande ADD CONSTRAINT fk_id_commande FOREIGN KEY (id_commande) REFERENCES commande(id_commande);
 ALTER TABLE detail_commande ADD CONSTRAINT fk_id_produit FOREIGN KEY (id_produit) REFERENCES produit(id_produit);
+
+INSERT INTO membre VALUES (1,'admin','admin','ynov','campus','contact@e-ynov.com','m','Aix-en-Provence','13109','2 rue du Corbusier',1);
