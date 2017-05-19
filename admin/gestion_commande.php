@@ -1,3 +1,4 @@
+
 <?php 
 
 require_once("../inc/init.inc.php");
@@ -15,12 +16,16 @@ if(!internauteEstConnecteEtEstAdmin())
 		$_POST[$indice] = htmlEntities(addSlashes($valeur));
 	}*/
 	if ($_POST){
-		
-			executeRequete("UPDATE commande set etat=$_POST[cetat] WHERE id_commande=$_GET[id_commande]");
-			
-			
+		switch ($_POST['cetat']) {
+			case 'livré': executeRequete("UPDATE commande set etat=3 WHERE id_commande=$_GET[id_commande]");
+			break;
+			case 'envoyé' : executeRequete("UPDATE commande set etat=2 WHERE id_commande=$_GET[id_commande]");
+			break;
+			case 'en cours de traitement' : executeRequete("UPDATE commande set etat=1 WHERE id_commande=$_GET[id_commande]");
+			break;
+			default:
 
-		
+		}
 		
 	}	
 
@@ -28,14 +33,14 @@ if(!internauteEstConnecteEtEstAdmin())
 
 	$content = '';
 	$contentA = '';
-	$contentB = '';
+	$somme ='';
 	$contenu .= '<a href="?action=commande">Affichage des commandes</a><br />';
 
 
 	echo $contenu;
 	if(isset($_GET['action']) && $_GET['action'] == "commande") {
 
-		$resultat = executeRequete("SELECT id_commande,date_enregistrement,etat FROM commande");
+		$resultat = executeRequete("SELECT id_commande,date_enregistrement,etat,montant FROM commande");
 
 		$content .= '<h2> Affichage des commandes en cours </h2>';
 		$content .= 'Nombre de produit(s) dans la boutique : ' . $resultat->num_rows;
@@ -48,10 +53,10 @@ if(!internauteEstConnecteEtEstAdmin())
 		while ($ligne = $resultat->fetch_assoc())
 		{
 			$content .= '<tr>';
-			foreach ($ligne as $indice => $information)
+			foreach ($ligne as $indice => $informationA)
 			{
 
-				$content .= '<td>' . $information . '</td>';
+				$content .= '<td>' . $informationA . '</td>';
 
 			}
 			$content .= '<td><a href="?action=commandeencours&id_commande=' . $ligne['id_commande'] .'"><img src="../inc/img/edit.png" /></a></td>';
@@ -60,7 +65,12 @@ if(!internauteEstConnecteEtEstAdmin())
 
 		$content .= '</table><br /><hr /><br />';
 	}
+	 $somme = executeRequete("SELECT sum(montant) FROM commande");
 
+
+
+	 var_dump($somme);
+	 /*$content .= "<p>Votre chiffre d'affaire est de :</p> ". $somme;*/
 	echo $content;
 
 	if(isset($_GET['action']) && $_GET['action'] == "commandeencours") {
@@ -72,9 +82,9 @@ if(!internauteEstConnecteEtEstAdmin())
 
 		}
 
-		var_dump($produit_actuel);
 
 
+var_dump($produit_actuel);
 		echo '
 		<h1> Commande </h1>
 		<form method="post" enctype="multipart/form-data" action="">
@@ -85,13 +95,13 @@ if(!internauteEstConnecteEtEstAdmin())
 
 			<select name="cetat"> 
 
-				<option value="1">
-				En cours de traitement 
+				<option name="1">
+				en cours de traitement 
 				</option>
-				<option value="2"> 
+				<option name="1"> 
 				livré
 				</option>
-				<option value="3"> 
+				<option name="3"> 
 				envoyé
 				</option>
 
@@ -104,8 +114,41 @@ if(!internauteEstConnecteEtEstAdmin())
 
 
 
+
+
+		$contentA .= '<table border="1" cellpadding="5"><tr>';
+		while($colonneA = $resultat->fetch_field())
+		{    
+			$contentA .= '<th>' . $colonneA->name . '</th>';
+		}
+		$contentA .= '</tr>';
+		while ($ligneA = $resultat->fetch_assoc())
+	{
+		$contentA .= '<tr>';
+		foreach ($ligneA as $indiceA => $information)
+		{
+			if($indiceA == "photo")
+			{
+				$contentA .= '<td><img src="' . $information . '" width="70" height="70" /></td>';
+			}
+			else
+			{
+				$contentA .= '<td>' . $information . '</td>';
+			}
+		}
+		
+		$contentA .= '</tr>';
 	}
+
+		$contentA .= '</table><br /><hr /><br />';
+	
+}
+
+echo $contentA;
+
+
+
+	
 
 
 	require_once("../inc/bas.inc.php"); ?>
-
