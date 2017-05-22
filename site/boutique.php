@@ -42,7 +42,7 @@ $contenu .= '</div>';
 
 
 <select name="recherche" > 
-<option name="" value="">
+<option name="base" value="0">
 --Choisir--
 </option>
 <option name="recherche" value="1">
@@ -80,25 +80,30 @@ if (isset($_POST['keywords']))
 {
 $choix = $_POST['recherche'];
 
+
+
+
+
 if ($choix==0)
 {
-echo "Veulliez "
+
  
 }
+if ($choix>=1) {
+
 
 if ($choix==1)
 {
-$resultatA = executeRequete("SELECT * FROM produit WHERE categorie LIKE '%".$keywords."%'");
+$resultatA = executeRequete("SELECT categorie,titre, couleur, taille, photo, prix FROM produit WHERE categorie LIKE '%".$keywords."%'");
  
 }
 elseif ($choix==2)
 {
-$resultatA = executeRequete("SELECT * FROM produit WHERE couleur LIKE '%".$keywords."%'");
+$resultatA = executeRequete("SELECT categorie,titre, couleur, taille, photo, prix FROM produit WHERE couleur LIKE '%".$keywords."%'");
 }
 elseif ($choix==3)
 {
-$resultatA = executeRequete("SELECT * FROM produit WHERE taille LIKE '%".$keywords."%'");
-}
+$resultatA = executeRequete("SELECT categorie,titre, couleur, taille, photo, prix FROM produit WHERE taille LIKE '%".$keywords."%'");
 }
 
 
@@ -133,7 +138,8 @@ $contentA .= '<table border="1" cellpadding="5"><tr>';
 		$contentA .= '</table><br /><hr /><br />';
 
 echo $contentA;
-
+}
+}
 }
 require_once("inc/bas.inc.php");
 
