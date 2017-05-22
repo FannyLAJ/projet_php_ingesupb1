@@ -41,7 +41,7 @@ $contenu .= '</div>';
     <input type="submit" value="Rechercher">
 
 
-<select name="recherche" > e
+<select name="recherche" > 
 <option name="" value="">
 --Choisir--
 </option>
@@ -64,7 +64,13 @@ Taille
 <?php echo $contenu;
 $resultatA ='';
 
-if ($_POST) {
+
+
+
+
+
+
+if(!empty($_POST["keywords"])) {
 	
 
 	$keywords = $_POST['keywords'];
@@ -74,10 +80,15 @@ if (isset($_POST['keywords']))
 {
 $choix = $_POST['recherche'];
 
+if ($choix==0)
+{
+echo "Veulliez "
+ 
+}
+
 if ($choix==1)
 {
 $resultatA = executeRequete("SELECT * FROM produit WHERE categorie LIKE '%".$keywords."%'");
-echo 'test';
  
 }
 elseif ($choix==2)
@@ -89,10 +100,39 @@ elseif ($choix==3)
 $resultatA = executeRequete("SELECT * FROM produit WHERE taille LIKE '%".$keywords."%'");
 }
 }
-var_dump($keywords);
- $resultatA = $resultatA->fetch_assoc();
-var_dump($resultatA);
+
+
+
  
+$contentA ='';
+
+
+$contentA .= '<table border="1" cellpadding="5"><tr>';
+		while($colonneA = $resultatA->fetch_field())
+		{    
+			$contentA .= '<th>' . $colonneA->name . '</th>';
+		}
+		$contentA .= '</tr>';
+		while ($ligneA = $resultatA->fetch_assoc())
+	{
+		$contentA .= '<tr>';
+		foreach ($ligneA as $indiceP => $information) {
+			if($indiceP == "photo")
+			{
+				$contentA .= '<td><img src="' . $information . '" width="70" height="70" /></td>';
+			}
+		else
+			{
+				$contentA .= '<td>' . $information . '</td>';
+			}
+		}
+		
+		$contentA .= '</tr>';
+	}
+
+		$contentA .= '</table><br /><hr /><br />';
+
+echo $contentA;
 
 }
 require_once("inc/bas.inc.php");
