@@ -3,7 +3,7 @@
 // Traitement PHP
 require_once('../inc/haut.inc.php');
 
-if (!isConnected()) {
+if (!internauteEstConnecte()) {
     header("Location : connexion.php");
 }
 else {
