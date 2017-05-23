@@ -15,8 +15,19 @@ if(isset($_GET['action']) && $_GET['action'] == "vider")
 	unset($_SESSION['panier']);
 }
 //----Modifier le panier---//
-
-
+if($_POST){
+	for($i = 0; $i < count($_SESSION['panier']['id_produit']); $i++){
+		if(isset($_POST['-' . $i]) && $_SESSION['panier']['quantite'][$i] > 0){
+			$_SESSION['panier']['quantite'][$i]--;
+		}
+		if(isset($_POST['+' . $i])){
+			$_SESSION['panier']['quantite'][$i]++;
+		}
+		if(isset($_POST['Supprimer' . $i])){
+			$_SESSION['panier']['quantite'][$i] = 0;
+		}
+	}
+}
 
 
 //--- PAIEMENT ---//
@@ -72,14 +83,16 @@ else
 {
 	for($i = 0; $i < count($_SESSION['panier']['id_produit']); $i++)
 	{
-		echo "<tr>";
-		echo "<td>" . $_SESSION['panier']['titre'][$i] . "</td>";
-		echo "<td>" . $_SESSION['panier']['id_produit'][$i] . "</td>";
-		echo "<td>" . $_SESSION['panier']['quantite'][$i] . "</td>";
-		echo "<td>" . $_SESSION['panier']['prix'][$i] . "</td>";
-		echo "<td><img  height= '70px' width='50px' alt='apercu' src='" . $_SESSION['panier']['photo'] . "' /></td>";
-		echo "</tr>";
-
+		if($_SESSION['panier']['quantite'][$i] > 0){
+			echo "<tr>";
+			echo "<td>" . $_SESSION['panier']['titre'][$i] . "</td>";
+			echo "<td>" . $_SESSION['panier']['id_produit'][$i] . "</td>";
+			echo "<td><form action='#' method='post'><input type='submit' value='-' name='-" . $i . "' />" . $_SESSION['panier']['quantite'][$i] . "<input type='submit' value='+' name='+" . $i . "' /></td>";
+			echo "<td>" . $_SESSION['panier']['prix'][$i] . "</td>";
+			echo "<td><img width='50px' alt='apercu' src='" . $_SESSION['panier']['photo'][$i] . "' /></td>";
+			echo "<td><form action='#' method='post'><input type='submit' value='Supprimer' name='Supprimer" . $i . "' /></form></td>";
+			echo "</tr>";
+		}
 	}
 	echo "<tr><th colspan='3'>Total</th><td colspan='2'>" . montantTotal() . " euros</td></tr>";
 	echo "<tr><th colspan='3'>HT</th><td colspan='2'>" . montantTotal() * 80 / 100  . " euros</td></tr>";
