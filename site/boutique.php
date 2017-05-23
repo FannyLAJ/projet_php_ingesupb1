@@ -36,6 +36,9 @@ $contenu .= '</div>';
 ?>
 
 <?php require_once("inc/haut.inc.php"); ?>
+<!-- Création de la recherche par mot clès -->
+
+
 <form method="post" action="">
     <input type="text" name="keywords">
     <input type="submit" value="Rechercher">
@@ -56,16 +59,13 @@ Taille
 </option>
 </select>
 
-
+<!-- création de la balise "input" et "select" visible en front par l'utilisateur -->
 
 </form>
 
 
 <?php echo $contenu;
 $resultatA ='';
-
-
-
 
 
 
@@ -82,7 +82,7 @@ $choix = $_POST['recherche'];
 
 
 
-
+/* Le morceau de code ci dessus a été crée pour éviter les érreurs*/
 
 if ($choix==0)
 {
@@ -106,8 +106,7 @@ elseif ($choix==3)
 $resultatA = executeRequete("SELECT categorie,titre, couleur, taille, photo, prix FROM produit WHERE taille LIKE '%".$keywords."%'");
 }
 
-
-
+/* En fonction de la recherche demandé, une requete différente sera éffectué */
  
 $contentA ='';
 
@@ -137,6 +136,7 @@ $contentA .= '<table border="1" cellpadding="5"><tr>';
 
 		$contentA .= '</table><br /><hr /><br />';
 
+/*Création du tableau de fin de recherche*/
 echo $contentA;
 
 }
@@ -149,6 +149,3 @@ require_once("inc/bas.inc.php");
 
 
  ?>
-
-
-
