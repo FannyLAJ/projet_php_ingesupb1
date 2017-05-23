@@ -74,7 +74,7 @@ function ajouterProduitDansPanier($titre,$id_produit,$quantite,$prix,$id_photo)
     {
 			$_SESSION['panier']['titre'][] = $titre;
 			$_SESSION['panier']['id_produit'][] = $id_produit;
-			$_SESSION['panier']['photo'] = $id_photo;
+			$_SESSION['panier']['photo'][] = $id_photo;
 			$_SESSION['panier']['quantite'][] = $quantite;
 			$_SESSION['panier']['prix'][] = $prix;
     }
