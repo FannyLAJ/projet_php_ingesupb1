@@ -2,13 +2,13 @@
 <?php require_once("../inc/init.inc.php");?>
 <?php require_once("../inc/haut.inc.php");
 //Traitement PHP
-if (!isAdmin()) {
+if (!internauteEstConnecteEtEstAdmin()) {
     header("location: connexion.php");
 }
 
 if (isset($_GET['action']) && $_GET['action']=='suppression') {
-    $result = executeQuery("DELETE FROM membre WHERE id_membre=$_GET[id_membre];");
-    $result = executeQuery("ALTER TABLE membre AUTO_INCREMENT=$_GET[id_membre];");
+    $result = executeRequete("DELETE FROM membre WHERE id_membre=$_GET[id_membre];");
+    $result = executeRequete("ALTER TABLE membre AUTO_INCREMENT=$_GET[id_membre];");
     header("location: gestion_membre.php?action=affichage");
 }
 
@@ -19,13 +19,13 @@ if (!empty($_POST)) {
     }
 
     if ($_POST['ajouter'] == 'Ajouter') {
-        $result = executeQuery("INSERT INTO membre (pseudo, mdp, email, nom, prenom, civilite, ville, code_postal, adresse) VALUES('$_POST[pseudo]',"
+        $result = executeRequete("INSERT INTO membre (pseudo, mdp, email, nom, prenom, civilite, ville, code_postal, adresse) VALUES('$_POST[pseudo]',"
             ."'$_POST[password]', '$_POST[email]', '$_POST[lastname]', '$_POST[firstname]', '$_POST[gender]', '$_POST[city]', '$_POST[zip]', '$_POST[address]');");
         if ($result) echo "Niquel !";
         else echo "<div style='background-color: red'>CA MARCHE PAAAS</div>";
     }
     else if ($_POST['ajouter'] == "Administrateur") {
-        $result = executeQuery("INSERT INTO membre (pseudo, mdp, email, nom, prenom, civilite, ville, code_postal, adresse, statut) VALUES('$_POST[pseudo]',"
+        $result = executeRequete("INSERT INTO membre (pseudo, mdp, email, nom, prenom, civilite, ville, code_postal, adresse, statut) VALUES('$_POST[pseudo]',"
             ."'$_POST[password]', '$_POST[email]', '$_POST[lastname]', '$_POST[firstname]', '$_POST[gender]', '$_POST[city]', '$_POST[zip]', '$_POST[address]', 1);");
         if ($result) echo "Niquel !";
         else echo "<div style='background-color: red'>CA MARCHE PAAAS</div>";
@@ -33,32 +33,32 @@ if (!empty($_POST)) {
 }
 
 //Liens vers les produits
-$content .= "<a href='gestion_membre.php?action=affichage'>Afficher la liste des membres</a><br><br>";
-$content .= "<a href='gestion_membre.php?action=ajout'>Ajouter manuellement un membre</a>";
+$contenu .= "<a href='gestion_membre.php?action=affichage'>Afficher la liste des membres</a><br><br>";
+$contenu .= "<a href='gestion_membre.php?action=ajout'>Ajouter manuellement un membre</a>";
 
 //Traitement
 if (isset($_GET['action']) && $_GET['action']=='affichage') {
-    $result = executeQuery("SELECT * FROM membre;");
-    $content.= "Nombre de membres inscrits : ".$result->num_rows;
-    $content.= "<table border=1px><tr>";
+    $result = executeRequete("SELECT * FROM membre;");
+    $contenu.= "Nombre de membres inscrits : ".$result->num_rows;
+    $contenu.= "<table border=1px><tr>";
     while ($colonne = $result->fetch_field()) {
-        $content.= "<th>".$colonne->name."</th>";
+        $contenu.= "<th>".$colonne->name."</th>";
     }
-    $content.= "<th>Modification</th>";
-    $content.="<th>Suppression</th></tr>";
+    $contenu.= "<th>Modification</th>";
+    $contenu.="<th>Suppression</th></tr>";
     while ($ligne = $result->fetch_assoc()) {
-        $content.="<tr>";
+        $contenu.="<tr>";
         foreach ($ligne as $indice => $value) {
-            $content.="<td>".$value."</td>";
+            $contenu.="<td>".$value."</td>";
         }
-        $content.="<td><a href='gestion_membre.php?action=modification&id_membre=".$ligne['id_membre']."'><img src='../inc/img/edit.png'></a></td>";
-        $content.="<td><a href='gestion_membre.php?action=suppression&id_membre=".$ligne['id_membre']."'><img src='../inc/img/delete.png'></a></td>";
-        $content.="</tr>";
+        $contenu.="<td><a href='gestion_membre.php?action=modification&id_membre=".$ligne['id_membre']."'><img src='../inc/img/edit.png'></a></td>";
+        $contenu.="<td><a href='gestion_membre.php?action=suppression&id_membre=".$ligne['id_membre']."'><img src='../inc/img/delete.png'></a></td>";
+        $contenu.="</tr>";
     }
-    $content.="</table>";
+    $contenu.="</table>";
 }
 
-echo $content;
+echo $contenu;
 
 if (isset($_GET)) {
     if (isset($_GET['action']) != false) {
