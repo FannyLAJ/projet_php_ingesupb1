@@ -1,19 +1,19 @@
-<?php require_once('../inc/init.inc.php');
+<?php require_once('inc/init.inc.php');
 
 // Traitement PHP
-require_once('../inc/haut.inc.php');
+require_once('inc/haut.inc.php');
 
 if (!internauteEstConnecte()) {
     header("Location : connexion.php");
 }
 else {
-    $content .= "<p class='conteneur'>Bonjour <strong>".$_SESSION['membre']['pseudo']."</strong> !"
+    $contenu .= "<p class='conteneur'>Bonjour <strong>".$_SESSION['membre']['pseudo']."</strong> !"
         ."<br><br>Adresse : ".$_SESSION['membre']['adresse']."<br>".$_SESSION['membre']['code_postal']."&nbsp;".$_SESSION['membre']['ville']
         ."<br><br>Mail : ".$_SESSION['membre']['email']."</p>"
         ."<a href='profil.php?action=modification&id=".$_SESSION['membre']['id_membre']."'>Modifier vos informations</a>&nbsp;"
         ."<a href='profil.php?action=avatar&id=".$_SESSION['membre']['id_membre']."'>Ajouter un avatar</a>";
 
-    echo $content;
+    echo $contenu;
 }
 
 if (isset($_POST['inscription'])) {
@@ -101,5 +101,18 @@ if (isset($_GET)) {
     }
 }
 
-require_once('../inc/bas.inc.php');
+$supr = '<div>';
+$supr .= '<form action="#" method="post">';
+$supr .= '<input type="submit" name="supprimer_compte" value="Supprimer votre compte" />';
+$supr .= '</div>';
 
+if($_POST){
+	$mail = $_SESSION['membre']['email'];
+	$resultat = executeRequete("DELETE FROM membre WHERE email = '$mail'");
+	session_destroy();
+	header('Location:index.php');
+}
+
+echo $supr;
+
+require_once('inc/bas.inc.php');
