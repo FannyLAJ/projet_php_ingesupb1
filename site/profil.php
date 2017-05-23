@@ -40,29 +40,26 @@ if (isset($_POST['inscription'])) {
     }
 }
 
-
-
 if (isset($_POST['avatar'])) {
-    $destination = 'C:/wamp64/www'.ROOT_SITE.'inc/img/gallery';
-    
+    $destination = 'C:/wamp64/www'.ROOT_SITE.'inc/img/galerie';
+
     if (is_dir($destination) == false) mkdir($destination, 077);
 
     $filename = $_SESSION['membre']['id_membre']."_".$_FILES['avatar']['name'];
-    $imgbdd = '../inc/img/gallery/'.$filename;
+    $imgbdd = '../inc/img/galerie/'.$filename;
     $img = $destination."/".$_FILES['avatar']['name'];
 
+    $size = getimagesize($_FILES['avatar']['tmp_name']);
 
-    $result = move_uploaded_file($_FILES['avatar']['tmp_name'], $imgbdd);
-    if ($result == FALSE) echo "Une erreur est survenue lors du transfert de votre fichier !";
+    if ($size[0] > 300 || $size[1] > 300) echo "<div class='erreur'>Erreur : le fichier est trop grand !</div>";
 
     else {
-        $size = getimagesize($imgbdd);
-
-        if ($size[0] > 300 || $size[1] > 300) echo "Erreur : le fichier est trop grand !";
+        $result = move_uploaded_file($_FILES['avatar']['tmp_name'], $imgbdd);
+        if ($result == FALSE) echo "<div class='erreur'>Une erreur est survenue lors du transfert de votre fichier !</div>";
 
         else {
             $result=executeQuery("UPDATE membre SET avatar='$imgbdd' WHERE id_membre=".$_SESSION['membre']['id_membre']);
-            echo "<img src='".$imgbdd."'>";
+            echo "<br><img src='".$imgbdd."'>";
         }
     }
 }
