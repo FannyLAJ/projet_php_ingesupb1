@@ -87,7 +87,7 @@ $choix = $_POST['recherche'];
 if ($choix==0)
 {
 
- 
+ return 0;
 }
 if ($choix>=1) {
 
@@ -138,6 +138,7 @@ $contentA .= '<table border="1" cellpadding="5"><tr>';
 		$contentA .= '</table><br /><hr /><br />';
 
 echo $contentA;
+
 }
 }
 }
@@ -148,4 +149,6 @@ require_once("inc/bas.inc.php");
 
 
  ?>
+
+
 
