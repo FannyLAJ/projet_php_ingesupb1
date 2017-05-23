@@ -63,28 +63,29 @@ if(!internauteEstConnecteEtEstAdmin())
 			$content .= '</tr>';
 		}
 
+$content .= '</table><br /><hr /><br />';
+     $somme = executeRequete("SELECT sum(montant) FROM commande");
+   $sommeB = $somme->fetch_assoc();
+
+
+   $content .= "Votre chiffre d'affaire est de : ".$sommeB['sum(montant)'];
 		$content .= '</table><br /><hr /><br />';
 	}
-	 $somme = executeRequete("SELECT sum(montant) FROM commande");
-
-
-
-	 var_dump($somme);
-	 /*$content .= "<p>Votre chiffre d'affaire est de :</p> ". $somme;*/
+	
 	echo $content;
-
+	
 	if(isset($_GET['action']) && $_GET['action'] == "commandeencours") {
 
 		if(isset($_GET['id_commande'])) {
 
-			$resultat = executeRequete("SELECT c.id_commande,d.id_produit, p.titre, p.photo, d.quantite, m.id_membre,m.nom, m.prenom, m.adresse, m.ville, m.code_postal,c.etat FROM details_commande d, produit p, commande c, membre m WHERE (c.id_commande=$_GET[id_commande]) = (d.id_commande=$_GET[id_commande]) AND c.id_membre = m.id_membre");
-			$produit_actuel = $resultat->fetch_assoc();
-
-		}
+			$resultatB = executeRequete("SELECT DISTINCT c.id_commande, d.id_produit, p.titre,p.photo, d.quantite, m.id_membre, m.nom, m.prenom,m.ville, m.code_postal, c.etat FROM commande c, details_commande d, produit p, membre m WHERE c.id_commande = $_GET[id_commande] AND c.id_commande = d.id_commande AND c.id_membre = m.id_membre AND p.id_produit = d.id_produit");
 
 
 
-var_dump($produit_actuel);
+			
+
+	
+
 		echo '
 		<h1> Commande </h1>
 		<form method="post" enctype="multipart/form-data" action="">
@@ -112,39 +113,37 @@ var_dump($produit_actuel);
 		</form>';
 
 
-
-
-
-
-		$contentA .= '<table border="1" cellpadding="5"><tr>';
-		while($colonneA = $resultat->fetch_field())
+$contentA .= '<table border="1" cellpadding="5"><tr>';
+		while($colonne = $resultatB->fetch_field())
 		{    
-			$contentA .= '<th>' . $colonneA->name . '</th>';
+			$contentA .= '<th>' . $colonne->name . '</th>';
 		}
 		$contentA .= '</tr>';
-		while ($ligneA = $resultat->fetch_assoc())
-	{
-		$contentA .= '<tr>';
-		foreach ($ligneA as $indiceA => $information)
+		while ($ligne = $resultatB->fetch_assoc())
 		{
-			if($indiceA == "photo")
+			$contentA .= '<tr>';
+			foreach ($ligne as $indice => $informationA)
+			if($indice == "photo")
 			{
-				$contentA .= '<td><img src="' . $information . '" width="70" height="70" /></td>';
+				$contentA .= '<td><img src="' . $informationA . '" width="70" height="70" /></td>';
 			}
 			else
 			{
-				$contentA .= '<td>' . $information . '</td>';
+				$contentA .= '<td>' . $informationA . '</td>';
 			}
+			
+			$contentA .= '</tr>';
 		}
-		
-		$contentA .= '</tr>';
-	}
 
-		$contentA .= '</table><br /><hr /><br />';
-	
+$contentA .= '</table><br /><hr /><br />';
+
+		
+		
+echo $contentA;
+
+}
 }
 
-echo $contentA;
 
 
 
