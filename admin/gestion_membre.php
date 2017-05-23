@@ -1,4 +1,3 @@
-
 <?php require_once("../inc/init.inc.php");?>
 <?php require_once("../inc/haut.inc.php");
 //Traitement PHP
@@ -6,10 +5,11 @@ if (!internauteEstConnecteEtEstAdmin()) {
     header("location: connexion.php");
 }
 
+//Si l'utilisateur demande à supprimer un membre
 if (isset($_GET['action']) && $_GET['action']=='suppression') {
     $result = executeRequete("DELETE FROM membre WHERE id_membre=$_GET[id_membre];");
-    $result = executeRequete("ALTER TABLE membre AUTO_INCREMENT=$_GET[id_membre];");
     header("location: gestion_membre.php?action=affichage");
+    echo "<div class='validation'>Le membre a été correctement supprimé.</div>";
 }
 
 if (!empty($_POST)) {
@@ -21,20 +21,16 @@ if (!empty($_POST)) {
     if ($_POST['ajouter'] == 'Ajouter') {
         $result = executeRequete("INSERT INTO membre (pseudo, mdp, email, nom, prenom, civilite, ville, code_postal, adresse) VALUES('$_POST[pseudo]',"
             ."'$_POST[password]', '$_POST[email]', '$_POST[lastname]', '$_POST[firstname]', '$_POST[gender]', '$_POST[city]', '$_POST[zip]', '$_POST[address]');");
-        if ($result) echo "Niquel !";
-        else echo "<div style='background-color: red'>CA MARCHE PAAAS</div>";
+        if ($result) echo "<div class='validation'>$_POST[pseudo] a été correctement ajouté à la liste des membres.";
+        else debug($result);
     }
     else if ($_POST['ajouter'] == "Administrateur") {
         $result = executeRequete("INSERT INTO membre (pseudo, mdp, email, nom, prenom, civilite, ville, code_postal, adresse, statut) VALUES('$_POST[pseudo]',"
             ."'$_POST[password]', '$_POST[email]', '$_POST[lastname]', '$_POST[firstname]', '$_POST[gender]', '$_POST[city]', '$_POST[zip]', '$_POST[address]', 1);");
-        if ($result) echo "Niquel !";
-        else echo "<div style='background-color: red'>CA MARCHE PAAAS</div>";
+        if ($result) echo "<div class='validation'>$_POST[pseudo] a été correctement ajouté à la liste des membres en tant qu'administrateur.";
+        else debug($result);
     }
 }
-
-//Liens vers les produits
-$contenu .= "<a href='gestion_membre.php?action=affichage'>Afficher la liste des membres</a><br><br>";
-$contenu .= "<a href='gestion_membre.php?action=ajout'>Ajouter manuellement un membre</a>";
 
 //Traitement
 if (isset($_GET['action']) && $_GET['action']=='affichage') {
@@ -49,7 +45,8 @@ if (isset($_GET['action']) && $_GET['action']=='affichage') {
     while ($ligne = $result->fetch_assoc()) {
         $contenu.="<tr>";
         foreach ($ligne as $indice => $value) {
-            $contenu.="<td>".$value."</td>";
+            if ($indice=='avatar') $contenu.="<td><img style='width:100px' src='".$value."'></td>";
+            else $contenu.="<td>".$value."</td>";
         }
         $contenu.="<td><a href='gestion_membre.php?action=modification&id_membre=".$ligne['id_membre']."'><img src='../inc/img/edit.png'></a></td>";
         $contenu.="<td><a href='gestion_membre.php?action=suppression&id_membre=".$ligne['id_membre']."'><img src='../inc/img/delete.png'></a></td>";
@@ -58,12 +55,13 @@ if (isset($_GET['action']) && $_GET['action']=='affichage') {
     $contenu.="</table>";
 }
 
-echo $contenu;
+$contenu .= "<a href='gestion_membre.php?action=affichage'>Afficher la liste des membres</a><br><br>";
+$contenu .= "<a href='gestion_membre.php?action=ajout'>Ajouter manuellement un membre</a>";
 
 if (isset($_GET)) {
     if (isset($_GET['action']) != false) {
         if ($_GET['action'] == 'ajout' || $_GET['action'] == 'modification') {
-            echo "<form method='post' action='".$_SERVER['PHP_SELF']."'>
+            $contenu.= "<form method='post' action='".$_SERVER['PHP_SELF']."'>
         <label for='pseudo'>Pseudo : </label>
             <input type='text' id='pseudo' name='pseudo' maxlength='20' placeholder='Pseudo'><br>
         <label for='password'>Mot de passe : </label>
@@ -91,6 +89,9 @@ if (isset($_GET)) {
         }
     }
 }
+
+echo $contenu;
+
 ?>
 
 <?php require_once("../inc/bas.inc.php") ?>
