@@ -44,6 +44,9 @@ if (isset($_POST['inscription'])) {
 
 if (isset($_POST['avatar'])) {
     $destination = 'C:/wamp64/www'.ROOT_SITE.'inc/img/gallery';
+    
+    if (is_dir($destination) == false) mkdir($destination, 077);
+
     $filename = $_SESSION['membre']['id_membre']."_".$_FILES['avatar']['name'];
     $imgbdd = '../inc/img/gallery/'.$filename;
     $img = $destination."/".$_FILES['avatar']['name'];
@@ -53,7 +56,7 @@ if (isset($_POST['avatar'])) {
     if ($result == FALSE) echo "Une erreur est survenue lors du transfert de votre fichier !";
 
     else {
-        $size = getimagesize($img);
+        $size = getimagesize($imgbdd);
 
         if ($size[0] > 300 || $size[1] > 300) echo "Erreur : le fichier est trop grand !";
 
