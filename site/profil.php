@@ -17,12 +17,12 @@ else {
 }
 
 if (isset($_POST['inscription'])) {
-    $result = executeQuery("UPDATE membre SET pseudo='$_POST[pseudo]', nom='$_POST[lastname]', prenom='$_POST[firstname]', email='$_POST[email]', ville='$_POST[city]',
+    $result = executeRequete("UPDATE membre SET pseudo='$_POST[pseudo]', nom='$_POST[lastname]', prenom='$_POST[firstname]', email='$_POST[email]', ville='$_POST[city]',
       adresse='$_POST[address]', code_postal=$_POST[zip] WHERE id_membre=" . $_SESSION['membre']['id_membre']);
 
     if ($result != false) {
         echo "Vos modifications ont bien été enregistrées, elles prendront effet à votre prochaine connexion !<br>";
-        $result = executeQuery("SELECT * FROM membre WHERE id_membre=" . $_SESSION['membre']['id_membre']);
+        $result = executeRequete("SELECT * FROM membre WHERE id_membre=" . $_SESSION['membre']['id_membre']);
 
         $contenu="<table border='solid 1px grey'>";
         while ($colonne = $result->fetch_field()) {
@@ -58,7 +58,7 @@ if (isset($_POST['avatar'])) {
         if ($result == FALSE) echo "<div class='erreur'>Une erreur est survenue lors du transfert de votre fichier !</div>";
 
         else {
-            $result=executeQuery("UPDATE membre SET avatar='$imgbdd' WHERE id_membre=".$_SESSION['membre']['id_membre']);
+            $result=executeRequete("UPDATE membre SET avatar='$imgbdd' WHERE id_membre=".$_SESSION['membre']['id_membre']);
             echo "<br><img src='".$imgbdd."'>";
         }
     }
