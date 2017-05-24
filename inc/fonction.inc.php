@@ -103,3 +103,34 @@ function retirerproduitDuPanier($id_produit_a_supprimer)
 	}
 }
 
+//------------- PAYPAL ----------------//
+function initPaypalURL() {
+    $url = 'https://api-3t.sandbox.paypal.com/nvp?';
+    $user = 'givrefleur_api1.gmail.com';
+    $password = 'WSLP8A6PPZ95V2HA';
+    $signature = 'AiPC9BjkCyDFQXbSkoZcgqH3hpacAmESlpFherNJROwLytDLRClNKbcR';
+    $version = '204.0';
+
+    $url= $url.'USER='.$user.'&PWD='.$password.'&SIGNATURE='.$signature.'&VERSION='.$version.'&METHOD=SetExpressCheckout&AMT=10.0'.
+            '&CANCELURL='.urlencode("http://localhost/projet_php_ingesupb1/cancel.php").
+			'&RETURNURL='.urlencode("http://localhost/projet_php_ingesupb1/site/return.php").
+			'&CURRENCYCODE=EUR'.
+			'&LOCALECODE=FR';
+
+    return $url;
+}
+
+
+
+function recupParametresPaypal($retour_paypal)
+{
+    $liste_param_paypal = '';
+
+    $liste_param = explode("&", $retour_paypal);
+    foreach ($liste_param as $param) {
+        list($nom, $valeur) = explode("=", $param);
+        $liste_param_paypal[$nom] = urldecode($valeur);
+    }
+    echo '<pre>'; print_r($liste_param_paypal); echo '</pre>';
+    return $liste_param_paypal;
+}
