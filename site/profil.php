@@ -101,18 +101,20 @@ if (isset($_GET)) {
     }
 }
 
+//Création du formulaire
 $supr = '<div>';
 $supr .= '<form action="#" method="post">';
 $supr .= '<input type="submit" name="supprimer_compte" value="Supprimer votre compte" />';
 $supr .= '</div>';
 
-if($_POST){
-	$mail = $_SESSION['membre']['email'];
-	$resultat = executeRequete("DELETE FROM membre WHERE email = '$mail'");
-	session_destroy();
-	header('Location:index.php');
+if($_POST){												//Si le formulaire est validé
+	$mail = $_SESSION['membre']['email'];								//On sauvegarde le mail de l'utilisateur
+	$resultat = executeRequete("DELETE FROM membre WHERE email = '$mail'");				//On supprime ce compte de la BDD membre
+	session_destroy();										//On supprime la session
+	header('Location:index.php');   								//On redirige vers index.php
 }
 
+//On affiche le formulaire
 echo $supr;
 
 require_once('inc/bas.inc.php');
