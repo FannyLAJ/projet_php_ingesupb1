@@ -15,16 +15,16 @@ if(isset($_GET['action']) && $_GET['action'] == "vider")
 	unset($_SESSION['panier']);
 }
 //----Modifier le panier---//
-if($_POST){
-	for($i = 0; $i < count($_SESSION['panier']['id_produit']); $i++){
-		if(isset($_POST['-' . $i]) && $_SESSION['panier']['quantite'][$i] > 0){
-			$_SESSION['panier']['quantite'][$i]--;
+if($_POST){	//Si formulaire validé
+	for($i = 0; $i < count($_SESSION['panier']['id_produit']); $i++){	//Pour chaque produit dans le panier
+		if(isset($_POST['-' . $i]) && $_SESSION['panier']['quantite'][$i] > 0){		//Si bouton - cliquer et que la quantité est > 0
+			$_SESSION['panier']['quantite'][$i]--;		//On diminue la quantité de 1
 		}
-		if(isset($_POST['+' . $i])){
-			$_SESSION['panier']['quantite'][$i]++;
+		if(isset($_POST['+' . $i])){		//Si bouton +
+			$_SESSION['panier']['quantite'][$i]++;		//On augmente la quantité de 1
 		}
-		if(isset($_POST['Supprimer' . $i])){
-			$_SESSION['panier']['quantite'][$i] = 0;
+		if(isset($_POST['Supprimer' . $i])){	//Si bouton Suppri;er
+			$_SESSION['panier']['quantite'][$i] = 0;	//On passe la quantité a 0
 		}
 	}
 }
@@ -81,9 +81,10 @@ if(empty($_SESSION['panier']['id_produit'])) // panier vide
 }
 else
 {
-	for($i = 0; $i < count($_SESSION['panier']['id_produit']); $i++)
+	for($i = 0; $i < count($_SESSION['panier']['id_produit']); $i++)	//Pour chaque produit du panier
 	{
-		if($_SESSION['panier']['quantite'][$i] > 0){
+		if($_SESSION['panier']['quantite'][$i] > 0){	//Si quantité > 0
+			//On affiche les infos du produit
 			echo "<tr>";
 			echo "<td>" . $_SESSION['panier']['titre'][$i] . "</td>";
 			echo "<td>" . $_SESSION['panier']['id_produit'][$i] . "</td>";
