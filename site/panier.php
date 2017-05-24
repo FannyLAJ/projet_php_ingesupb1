@@ -18,7 +18,7 @@ if(isset($_GET['action']) && $_GET['action'] == "vider")
 if($_POST){	//Si formulaire validé
 	for($i = 0; $i < count($_SESSION['panier']['id_produit']); $i++){	//Pour chaque produit dans le panier
 		if(isset($_POST['-' . $i]) && $_SESSION['panier']['quantite'][$i] > 0){		//Si bouton - cliquer et que la quantité est > 0
-			$_SESSION['panier']['quantite'][$i]--;		//On diminue la quantité de 1
+		$_SESSION['panier']['quantite'][$i]--;		//On diminue la quantité de 1
 		}
 		if(isset($_POST['+' . $i])){		//Si bouton +
 			$_SESSION['panier']['quantite'][$i]++;		//On augmente la quantité de 1
@@ -61,7 +61,7 @@ if(isset($_POST['payer']))
 		$id_commande = $mysqli->insert_id;
 		for($i = 0; $i < count($_SESSION['panier']['id_produit']); $i++)
 		{
-			executeRequete("INSERT INTO details_commande (id_commande, id_produit, quantite, prix) VALUES ($id_commande, " . $_SESSION['panier']['id_produit'][$i] . "," . $_SESSION['panier']['quantite'][$i] . "," . $_SESSION['panier']['prix'][$i] . ")");
+			executeRequete("INSERT INTO detail_commande (id_commande, id_produit, quantite, prix) VALUES ($id_commande, " . $_SESSION['panier']['id_produit'][$i] . "," . $_SESSION['panier']['quantite'][$i] . "," . $_SESSION['panier']['prix'][$i] . ")");
 		}
 		mail($_SESSION['membre']['email'], "confirmation de la commande", "Merci votre n° de suivi est le $id_commande", "From:vendeur@dp_site.com");
 		$contenu .= "<div class='validation'>Merci pour votre commande. votre n° de suivi est le $id_commande</div>";
