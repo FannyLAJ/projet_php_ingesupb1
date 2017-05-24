@@ -63,9 +63,30 @@ if(isset($_POST['payer']))
 		{
 			executeRequete("INSERT INTO details_commande (id_commande, id_produit, quantite, prix) VALUES ($id_commande, " . $_SESSION['panier']['id_produit'][$i] . "," . $_SESSION['panier']['quantite'][$i] . "," . $_SESSION['panier']['prix'][$i] . ")");
 		}
-		unset($_SESSION['panier']);
 		mail($_SESSION['membre']['email'], "confirmation de la commande", "Merci votre n° de suivi est le $id_commande", "From:vendeur@dp_site.com");
 		$contenu .= "<div class='validation'>Merci pour votre commande. votre n° de suivi est le $id_commande</div>";
+		
+		$requete = initPaypalURL();
+       		$curl = curl_init($requete);
+        	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0); //Afin d'éviter les erreurs, la connexion sécurisée est désactivée
+        	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        	$retour_paypal = curl_exec($curl);
+        	if (!$retour_paypal) 
+		{
+            		echo "<p>Erreur</p><p>";
+            		echo curl_error($curl);
+            		echo "</p>";
+        	}
+        	else 
+		{
+            		$liste_param_paypal=recupParametresPaypal($retour_paypal);
+
+            		if ($liste_param_paypal['ACK'] == 'Success') 
+			{
+                		header("Location: https://www.sandbox.paypal.com/webscr&cmd=_express-checkout&token=".$liste_param_paypal['TOKEN']);
+            		}
+        	}
+        	curl_close($curl);
 	}
 }
 
