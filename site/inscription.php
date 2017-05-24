@@ -1,63 +1,82 @@
-<?php require_once('../inc/init.inc.php');
+<?php
+require_once("inc/init.inc.php");
+if($_POST)
+{
+	debug($_POST);
+	$verif_caractere = preg_match('#^[a-zA-Z0-9._-]+$#', $_POST['pseudo']); 
+	if(!$verif_caractere || strlen($_POST['pseudo']) < 1 || strlen($_POST['pseudo']) > 20 )
+	{
+		$contenu .= "<div class='erreur'>Le pseudo doit contenir entre 1 et 20 caractères. <br> Caractère accepté : Lettre de A à Z et chiffre de 0 à 9</div>";
+	}
+	if(empty($contenu)) 
+	{
+		$membre = executeRequete("SELECT * FROM membre WHERE pseudo='$_POST[pseudo]'"); 
+		if($membre->num_rows > 0)
+		{
+			$contenu .= "<div class='erreur'>Pseudo indisponible. Veuillez en choisir un autre svp.</div>";
+		}
+		else
+		{
 
-//Traitement formulaire
+		 $cryptage  = MCRYPT_BLOWFISH;         // Algorithme utilisé pour le cryptage des blocs
+         $key     = "valentin betrancourt";   // Clé de cryptage
+         $mdpcrypt = $_POST['mdp'];          // On récupère le mdp de l'inscription
 
-if($_POST) {
-    debug($_POST);
-    $verif_caractere = preg_match('#^[a-zA-Z0-9._-]+$#',$_POST['pseudo']);
+            $keyHash = md5($key);           //On générer une clé valide avec une fonction de hachage
 
-    if((!$verif_caractere) && (strlen($_POST['pseudo'])<1) || (strlen($_POST['pseudo'])>20)) {
-        $content .= "<div class=erreur>Le pseudo doit contenir entre 1 et 20 caractères.<br>Caractères acceptés de A à Z et de 0 à 9.<br>";
-        echo $content;
-    }
+            $key = substr($keyHash, 0,   mcrypt_get_key_size($cryptage, MCRYPT_MODE_CBC) );
 
-    else {
-        $membre = executeQuery("SELECT * FROM membre WHERE pseudo='".$_POST['pseudo']."';");
-        if ($membre->num_rows>0) {
-            $content .= "<div class='erreur'>Le pseudo existe déjà.</div>";
-            echo $content;
-        }
+            $iv_size = mcrypt_get_iv_size($cryptage, MCRYPT_MODE_CBC);
+            $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
 
-        else {
-            executeQuery("INSERT INTO membre (pseudo, mdp, nom, prenom, email, civilite, ville, code_postal, adresse) VALUES".
-                "('".$_POST['pseudo']."', '".$_POST['password']."', '".$_POST['lastname']."', '".$_POST['firstname']."', '".$_POST['email'].
-                "', '".$_POST['gender']."', '".$_POST['city']."', '".$_POST['zip']."', '".$_POST['address']."');");
+            $data = mcrypt_encrypt($cryptage, $key, $mdpcrypt, MCRYPT_MODE_CBC, $iv);
+            $data = $iv.$data;
+            $data64 = base64_encode($data);
 
-        }
-    }
+
+			foreach($_POST as $indice => $valeur)
+			{
+				$_POST[$indice] = htmlEntities(addSlashes($valeur));
+			}
+			executeRequete("INSERT INTO membre (pseudo, mdp, nom, prenom, email, civilite, ville, code_postal, adresse) VALUES ('$_POST[pseudo]', '".$data64."', '$_POST[nom]', '$_POST[prenom]', '$_POST[email]', '$_POST[civilite]', '$_POST[ville]', '$_POST[code_postal]', '$_POST[adresse]')");
+			$contenu .= "<div class='validation'>Vous êtes inscrit à notre site web. <a href=\"connexion.php\"><u>Cliquez ici pour vous connecter</u></a></div>";
+		}
+	}
 }
 ?>
+<?php require_once("inc/haut.inc.php"); ?>
+<?php echo $contenu; ?>
 
-<?php require_once('../inc/haut.inc.php'); ?>
-
-<form method="post" action="<?php echo $_SERVER['PHP_SELF'] ?>">
-    <label for="pseudo">Pseudo : </label>
-        <input type="text" id="pseudo" name="pseudo" maxlength="20" placeholder="Votre pseudo" required><br>
-    <label for="password">Mot de passe : </label>
-        <input type="password" id="password" name="password" required><br>
-    <label for="email">Adresse mail : </label>
-        <input type="email" id="email" name="email" placeholder="example@mail.com" required><br><br>
-
-    <label for="gender">Civilité : </label><br>
-        <input type="radio" id="gender" name="gender" value="m" required>Mr.<br>
-        <input type="radio" id="gender" name="gender" value="f" required>Mme.<br>
-    <label for="firstname">Prénom : </label>
-        <input type="text" id=firstname" name="firstname" maxlength="20" placeholder="Prénom" required><br>
-    <label for="lastname">Nom de famille : </label>
-        <input type="text" id="lastname" name="lastname" maxlength="20" placeholder="Nom de famille" required><br><br>
-
-    <label for="address">Adresse : </label>
-        <input type="text" id="address" name="address" required><br>
-    <label for="zip">Code postal : </label>
-        <input type="text" id="zip" name="zip" maxlength="5" required><br>
-    <label for="city">Ville : </label>
-        <input type="text" id="city" name="city" required><br><br>
-
-    <input type="submit" name="incription" value="S'inscrire">
-
+<form method="post" action="">
+    <label for="pseudo">Pseudo</label><br>
+    <input type="text" id="pseudo" name="pseudo" maxlength="20" placeholder="votre pseudo" pattern="[a-zA-Z0-9-_.]{1,20}" title="caractères acceptés : a-zA-Z0-9-_." required="required"><br><br>
+         
+    <label for="mdp">Mot de passe</label><br>
+    <input type="password" id="mdp" name="mdp" required="required"><br><br>
+         
+    <label for="nom">Nom</label><br>
+    <input type="text" id="nom" name="nom" placeholder="votre nom"><br><br>
+         
+    <label for="prenom">Prénom</label><br>
+    <input type="text" id="prenom" name="prenom" placeholder="votre prénom"><br><br>
+ 
+    <label for="email">Email</label><br>
+    <input type="email" id="email" name="email" placeholder="exemple@gmail.com"><br><br>
+         
+    <label for="civilite">Civilité</label><br>
+    <input name="civilite" value="m" checked="" type="radio">Homme
+    <input name="civilite" value="f" type="radio">Femme<br><br>
+                 
+    <label for="ville">Ville</label><br>
+    <input type="text" id="ville" name="ville" placeholder="votre ville" pattern="[a-zA-Z0-9-_.]{5,15}" title="caractères acceptés : a-zA-Z0-9-_."><br><br>
+         
+    <label for="cp">Code Postal</label><br>
+    <input type="text" id="code_postal" name="code_postal" placeholder="code postal" pattern="[0-9]{5}" title="5 chiffres requis : 0-9"><br><br>
+         
+    <label for="adresse">Adresse</label><br>
+    <textarea id="adresse" name="adresse" placeholder="votre dresse" pattern="[a-zA-Z0-9-_.]{5,15}" title="caractères acceptés :  a-zA-Z0-9-_."></textarea><br><br>
+ 
+    <input name="inscription" value="S'inscrire" type="submit">
 </form>
-
-
-
-
-<?php require_once('../inc/bas.inc.php'); ?>
+ 
+<?php require_once("inc/bas.inc.php"); ?>
